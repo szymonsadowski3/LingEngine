@@ -37,6 +37,8 @@ export function converter(dfa) {
         return {id: index, label: "" + state}
     });
 
+    console.log(outputNodes);
+
     let outputEdges = [];
 
     const dfaMap = dfa.transitionMap;
@@ -50,11 +52,7 @@ export function converter(dfa) {
             if (potentialExistingEdge) {
                 potentialExistingEdge.label += `,${transitionPair[0]}`;
             } else {
-                const edge = {from: key, to: transitionPair[1], label: transitionPair[0], smooth: {
-                        enabled: true,
-                        type: "dynamic",
-                        roundness: 0.3
-                    }};
+                const edge = {from: key, to: transitionPair[1], label: transitionPair[0], smooth: {type: 'curvedCW', roundness: 0.2}};
                 // const edge = {from: key, to: transitionPair[1], label: transitionPair[0]};
                 outputEdges.push(edge);
             }

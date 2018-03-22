@@ -1,6 +1,6 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
-import { converter } from '../../../utils/transform-from-dfa-to-graph';
+import {converter} from '../../../utils/transform-from-dfa-to-graph';
 import clone from 'lodash/clone';
 
 import './ui-container.scss';
@@ -30,12 +30,12 @@ class UiContainer extends React.Component {
     }
 
     render() {
-        const options = {
+        let options = {
             layout: {
                 randomSeed: undefined,
-                improvedLayout:true,
+                improvedLayout: true,
                 hierarchical: {
-                    enabled:false,
+                    enabled: false,
                     levelSeparation: 150,
                     nodeSpacing: 100,
                     treeSpacing: 200,
@@ -48,23 +48,53 @@ class UiContainer extends React.Component {
             },
             physics: {
                 barnesHut: {
-                    gravitationalConstant: -2000,
-                    centralGravity: 0.3,
-                    springLength: 95,
-                    springConstant: 0.04,
-                    damping: 0.09,
-                    avoidOverlap: 1
-                },
+                    gravitationalConstant: 0.1,
+                    centralGravity: 0.1, springConstant: 0
+                }
             }
+            // physics: {
+            //     barnesHut: {
+            //         gravitationalConstant: -2000,
+            //         centralGravity: 0.3,
+            //         springLength: 95,
+            //         springConstant: 0.04,
+            //         damping: 0.09,
+            //         avoidOverlap: 1
+            //     },
+            // }
+        };
+
+        options = {
+            edges: {
+                smooth: {
+                    type: 'cubicBezier',
+                    roundness: 0.4
+                }
+            },
+            layout: {
+                improvedLayout: true,
+                hierarchical: {
+                    enabled: false,
+                    levelSeparation: 150,
+                    nodeSpacing: 100,
+                    treeSpacing: 200,
+                    blockShifting: true,
+                    edgeMinimization: true,
+                    parentCentralization: true,
+                    direction: 'UD',        // UD, DU, LR, RL
+                    sortMethod: 'hubsize'   // hubsize, directed
+                },
+            },
+            physics:false
         };
 
         const events = {
-            select: function(event) {
-                const { nodes, edges } = event;
+            select: function (event) {
+                const {nodes, edges} = event;
             }
         };
 
-        const _renderMultipleInput = (_parentComponent, _stateKey, _onChange, _inputProps, _className="react-tagsinput") => {
+        const _renderMultipleInput = (_parentComponent, _stateKey, _onChange, _inputProps, _className = "react-tagsinput") => {
             return <TagsInput
                 value={_parentComponent.state[_stateKey]}
                 onChange={_onChange}
@@ -80,27 +110,28 @@ class UiContainer extends React.Component {
                     _renderMultipleInput(this, 'alphabet', this._handleAlphabetChange, {placeholder: 'Add letter'})
                 }
 
-                <hr />
+                <hr/>
                 <span className="states-label mr-3">Input states</span>
                 {
                     _renderMultipleInput(this, 'states', this._handleStatesChange, {placeholder: 'Add state'})
                 }
 
-                <hr />
+                <hr/>
                 <span className="initial-label mr-3">Input initial state</span>
                 {
                     _renderMultipleInput(this, 'initial', this._handleInitialChange, {placeholder: 'Add initial'})
                 }
 
-                <hr />
+                <hr/>
                 <span className="finals-label mr-3">Input final states</span>
                 {
                     _renderMultipleInput(this, 'finals', this._handleFinalsChange, {placeholder: 'Add final'})
                 }
 
-                <hr />
+                <hr/>
                 <span className="transition-map-label mr-3">Input transition map</span>
-                <textarea value={this.state.transitionMap} onChange={this._handleTransitionMapChange} className="json-area"/>
+                <textarea value={this.state.transitionMap} onChange={this._handleTransitionMapChange}
+                          className="json-area"/>
 
                 <button
                     onClick={() => {
@@ -115,7 +146,8 @@ class UiContainer extends React.Component {
                     Visualize!
                 </button>
 
-                {this.state.graphInput && <Graph graph={converter(this.state.graphInput)} options={options} events={events} />}
+                {this.state.graphInput &&
+                <Graph graph={converter(this.state.graphInput)} options={options} events={events}/>}
                 {this.state.graphInput && console.log(converter(this.state.graphInput))}
             </div>
         );
