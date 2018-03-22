@@ -39,7 +39,7 @@ export function converter(dfa) {
 
     let outputEdges = [];
 
-    const dfaMap = dfa.map;
+    const dfaMap = dfa.transitionMap;
     const dfaMapKeys = keys(dfaMap);
 
     forEach(dfaMapKeys, (key) => {

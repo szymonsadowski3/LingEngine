@@ -30,19 +30,6 @@ class UiContainer extends React.Component {
     }
 
     render() {
-        const inputTest = {
-            alphabet: ["a", "b"],
-            states: [0, 1],
-            initial: 0,
-            finals: [1],
-            map: {
-                0: {"a": 1, "b": 0},
-                1: {"a": 1, "b": 1},
-            }
-        };
-
-        const result = converter(inputTest);
-
         const options = {
             layout: {
                 hierarchical: true
@@ -98,16 +85,22 @@ class UiContainer extends React.Component {
 
                 <button
                     onClick={() => {
+                        const generatedOut = this._generateGraphInput(this.state);
+                        console.log(generatedOut);
+
                         this.setState(
                             {
-                                graphInput: this._generateGraphInput(this.state)
+                                graphInput: generatedOut
                             }
                         );
+
+
+                        console.log(this.state);
                     }}>
                     Visualize!
                 </button>
 
-                {this.state.graphInput && <Graph graph={result} options={options} events={events} />}
+                {this.state.graphInput && <Graph graph={converter(this.state.graphInput)} options={options} events={events} />}
             </div>
         );
     }
