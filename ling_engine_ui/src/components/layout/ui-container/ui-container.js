@@ -14,10 +14,10 @@ class UiContainer extends React.Component {
         super();
 
         this.state = {
-            alphabet: [],
-            states: [],
-            initial: [],
-            finals: [],
+            alphabet: ["a", "b", "c"],
+            states: [0, 1],
+            initial: [0],
+            finals: [1],
             transitionMap: '',
             graphInput: null
         };
@@ -32,10 +32,29 @@ class UiContainer extends React.Component {
     render() {
         const options = {
             layout: {
-                hierarchical: true
+                randomSeed: undefined,
+                improvedLayout:true,
+                hierarchical: {
+                    enabled:false,
+                    levelSeparation: 150,
+                    nodeSpacing: 100,
+                    treeSpacing: 200,
+                    blockShifting: true,
+                    edgeMinimization: true,
+                    parentCentralization: true,
+                    direction: 'UD',        // UD, DU, LR, RL
+                    sortMethod: 'hubsize'   // hubsize, directed
+                },
             },
-            edges: {
-                color: "#000000"
+            physics: {
+                barnesHut: {
+                    gravitationalConstant: -2000,
+                    centralGravity: 0.3,
+                    springLength: 95,
+                    springConstant: 0.04,
+                    damping: 0.09,
+                    avoidOverlap: 1
+                },
             }
         };
 
@@ -86,21 +105,18 @@ class UiContainer extends React.Component {
                 <button
                     onClick={() => {
                         const generatedOut = this._generateGraphInput(this.state);
-                        console.log(generatedOut);
 
                         this.setState(
                             {
                                 graphInput: generatedOut
                             }
                         );
-
-
-                        console.log(this.state);
                     }}>
                     Visualize!
                 </button>
 
                 {this.state.graphInput && <Graph graph={converter(this.state.graphInput)} options={options} events={events} />}
+                {this.state.graphInput && console.log(converter(this.state.graphInput))}
             </div>
         );
     }

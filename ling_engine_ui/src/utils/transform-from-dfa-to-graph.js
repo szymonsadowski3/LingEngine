@@ -34,7 +34,7 @@ const graph = {
 
 export function converter(dfa) {
     const outputNodes = map(dfa.states, (state, index) => {
-        return {id: index, label: state}
+        return {id: index, label: "" + state}
     });
 
     let outputEdges = [];
@@ -50,7 +50,12 @@ export function converter(dfa) {
             if (potentialExistingEdge) {
                 potentialExistingEdge.label += `,${transitionPair[0]}`;
             } else {
-                const edge = {from: key, to: transitionPair[1], label: transitionPair[0]};
+                const edge = {from: key, to: transitionPair[1], label: transitionPair[0], smooth: {
+                        enabled: true,
+                        type: "dynamic",
+                        roundness: 0.3
+                    }};
+                // const edge = {from: key, to: transitionPair[1], label: transitionPair[0]};
                 outputEdges.push(edge);
             }
         });
