@@ -1,6 +1,7 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
 import { converter } from '../../../utils/transform-from-dfa-to-graph';
+import clone from 'lodash/clone';
 
 import './ui-container.scss';
 import 'vis/dist/vis.css';
@@ -17,13 +18,15 @@ class UiContainer extends React.Component {
             states: [],
             initial: [],
             finals: [],
-            transitionMap: {},
+            transitionMap: '',
+            graphInput: null
         };
 
         this._handleAlphabetChange = this._handleAlphabetChange.bind(this);
         this._handleStatesChange = this._handleStatesChange.bind(this);
         this._handleInitialChange = this._handleInitialChange.bind(this);
         this._handleFinalsChange = this._handleFinalsChange.bind(this);
+        this._handleTransitionMapChange = this._handleTransitionMapChange.bind(this);
     }
 
     render() {
@@ -80,11 +83,43 @@ class UiContainer extends React.Component {
                 <hr />
                 <span className="initial-label mr-3">Input initial state</span>
                 {
-                    _renderMultipleInput(this, 'initial', this._handleInitialChange, {placeholder: 'Add state'})
+                    _renderMultipleInput(this, 'initial', this._handleInitialChange, {placeholder: 'Add initial'})
                 }
-                <Graph graph={result} options={options} events={events} />
+
+                <hr />
+                <span className="finals-label mr-3">Input final states</span>
+                {
+                    _renderMultipleInput(this, 'finals', this._handleFinalsChange, {placeholder: 'Add final'})
+                }
+
+                <hr />
+                <span className="transition-map-label mr-3">Input transition map</span>
+                <textarea value={this.state.transitionMap} onChange={this._handleTransitionMapChange} className="json-area"/>
+
+                <button
+                    onClick={() => {
+                        this.setState(
+                            {
+                                graphInput: this._generateGraphInput(this.state)
+                            }
+                        );
+                    }}>
+                    Visualize!
+                </button>
+
+                {this.state.graphInput && <Graph graph={result} options={options} events={events} />}
             </div>
         );
+    }
+
+    _generateGraphInput(state) {
+        return {
+            alphabet: clone(state.alphabet),
+            states: clone(state.states),
+            initial: clone(state.initial)[0],
+            finals: clone(state.finals),
+            transitionMap: JSON.parse(state.transitionMap),
+        }
     }
 
     _handleAlphabetChange(alphabet) {
@@ -101,6 +136,10 @@ class UiContainer extends React.Component {
 
     _handleFinalsChange(finals) {
         this.setState({finals})
+    }
+
+    _handleTransitionMapChange(event) {
+        this.setState({transitionMap: event.target.value})
     }
 }
 
