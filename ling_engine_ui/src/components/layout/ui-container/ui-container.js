@@ -6,7 +6,13 @@ import clone from 'lodash/clone';
 import './ui-container.scss';
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
+import { JsonEditor as Editor } from 'jsoneditor-react';
 
+import ace from 'brace';
+import 'brace/mode/json';
+import 'brace/theme/github';
+
+import 'jsoneditor-react/es/editor.min.css';
 import 'react-tagsinput/react-tagsinput.css'
 
 class UiContainer extends React.Component {
@@ -18,7 +24,7 @@ class UiContainer extends React.Component {
             states: [0, 1],
             initial: [0],
             finals: [1],
-            transitionMap: '',
+            transitionMap: {},
             graphInput: null
         };
 
@@ -27,44 +33,11 @@ class UiContainer extends React.Component {
         this._handleInitialChange = this._handleInitialChange.bind(this);
         this._handleFinalsChange = this._handleFinalsChange.bind(this);
         this._handleTransitionMapChange = this._handleTransitionMapChange.bind(this);
+        this._onVisualize = this._onVisualize.bind(this);
     }
 
     render() {
-        let options = {
-            layout: {
-                randomSeed: undefined,
-                improvedLayout: true,
-                hierarchical: {
-                    enabled: false,
-                    levelSeparation: 150,
-                    nodeSpacing: 100,
-                    treeSpacing: 200,
-                    blockShifting: true,
-                    edgeMinimization: true,
-                    parentCentralization: true,
-                    direction: 'UD',        // UD, DU, LR, RL
-                    sortMethod: 'hubsize'   // hubsize, directed
-                },
-            },
-            physics: {
-                barnesHut: {
-                    gravitationalConstant: 0.1,
-                    centralGravity: 0.1, springConstant: 0
-                }
-            }
-            // physics: {
-            //     barnesHut: {
-            //         gravitationalConstant: -2000,
-            //         centralGravity: 0.3,
-            //         springLength: 95,
-            //         springConstant: 0.04,
-            //         damping: 0.09,
-            //         avoidOverlap: 1
-            //     },
-            // }
-        };
-
-        options = {
+        const options = {
             edges: {
                 smooth: {
                     type: 'cubicBezier',
@@ -130,19 +103,17 @@ class UiContainer extends React.Component {
 
                 <hr/>
                 <span className="transition-map-label mr-3">Input transition map</span>
-                <textarea value={this.state.transitionMap} onChange={this._handleTransitionMapChange}
-                          className="json-area"/>
+
+                <Editor
+                    value={this.state.transitionMap}
+                    onChange={this._handleTransitionMapChange}
+                    ace={ace}
+                    theme="ace/theme/github"
+                    mode="code"
+                />
 
                 <button
-                    onClick={() => {
-                        const generatedOut = this._generateGraphInput(this.state);
-
-                        this.setState(
-                            {
-                                graphInput: generatedOut
-                            }
-                        );
-                    }}>
+                    onClick={this._onVisualize}>
                     Visualize!
                 </button>
 
@@ -159,7 +130,7 @@ class UiContainer extends React.Component {
             states: clone(state.states),
             initial: clone(state.initial)[0],
             finals: clone(state.finals),
-            transitionMap: JSON.parse(state.transitionMap),
+            transitionMap: clone(state.transitionMap),
         }
     }
 
@@ -179,8 +150,18 @@ class UiContainer extends React.Component {
         this.setState({finals})
     }
 
-    _handleTransitionMapChange(event) {
-        this.setState({transitionMap: event.target.value})
+    _handleTransitionMapChange(parsedMap) {
+        this.setState({transitionMap: parsedMap})
+    }
+
+    _onVisualize() {
+        const generatedOut = this._generateGraphInput(this.state);
+
+        this.setState(
+            {
+                graphInput: generatedOut
+            }
+        );
     }
 }
 

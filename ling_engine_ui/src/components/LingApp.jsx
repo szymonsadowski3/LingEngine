@@ -13,7 +13,7 @@ class LingApp extends React.Component {
                 <Nav/>
                 <HeaderSection />
                 <hr/>
-                <UiContainer></UiContainer>
+                <UiContainer/>
             </div>
         );
     }

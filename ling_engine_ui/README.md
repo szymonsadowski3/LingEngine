@@ -33,6 +33,8 @@ Minimal starter kit with hot module replacement (HMR) for rapid development.
 
 **All commands**
 
+npm i -D babel-plugin-transform-class-properties
+
 Command | Description
 --- | ---
 `npm run start-dev` | Build app continously (HMR enabled) and serve @ `http://localhost:8080`
