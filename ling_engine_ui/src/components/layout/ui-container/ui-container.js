@@ -1,12 +1,15 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
-import {converter} from '../../../utils/transform-from-dfa-to-graph';
 import clone from 'lodash/clone';
 
-import './ui-container.scss';
+import {converter} from '../../../utils/transform-from-dfa-to-graph';
+import {visOptions} from "../../../constants/constants-values";
+
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
 import { JsonEditor as Editor } from 'jsoneditor-react';
+
+import Modal from 'react-awesome-modal';
 
 import ace from 'brace';
 import 'brace/mode/json';
@@ -14,6 +17,8 @@ import 'brace/theme/github';
 
 import 'jsoneditor-react/es/editor.min.css';
 import 'react-tagsinput/react-tagsinput.css'
+import './ui-container.scss';
+import TransitionMapInfoInModal from "../stateless-helpers/transition-map-info-in-modal";
 
 class UiContainer extends React.Component {
     constructor() {
@@ -25,7 +30,8 @@ class UiContainer extends React.Component {
             initial: [0],
             finals: [1],
             transitionMap: {},
-            graphInput: null
+            graphInput: null,
+            isModalOpen: false,
         };
 
         this._handleAlphabetChange = this._handleAlphabetChange.bind(this);
@@ -34,33 +40,11 @@ class UiContainer extends React.Component {
         this._handleFinalsChange = this._handleFinalsChange.bind(this);
         this._handleTransitionMapChange = this._handleTransitionMapChange.bind(this);
         this._onVisualize = this._onVisualize.bind(this);
+        this._closeModal = this._closeModal.bind(this);
+        this._openModal = this._openModal.bind(this);
     }
 
     render() {
-        const options = {
-            edges: {
-                smooth: {
-                    type: 'cubicBezier',
-                    roundness: 0.4
-                }
-            },
-            layout: {
-                improvedLayout: true,
-                hierarchical: {
-                    enabled: false,
-                    levelSeparation: 150,
-                    nodeSpacing: 100,
-                    treeSpacing: 200,
-                    blockShifting: true,
-                    edgeMinimization: true,
-                    parentCentralization: true,
-                    direction: 'UD',        // UD, DU, LR, RL
-                    sortMethod: 'hubsize'   // hubsize, directed
-                },
-            },
-            physics:false
-        };
-
         const events = {
             select: function (event) {
                 const {nodes, edges} = event;
@@ -78,6 +62,13 @@ class UiContainer extends React.Component {
 
         return (
             <div className="ui-container-wrapper container">
+                <Modal visible={this.state.isModalOpen} width="600" effect="fadeInUp" onClickAway={() => this._closeModal()}>
+                    <div className="container">
+                        <TransitionMapInfoInModal />
+                        <button className="btn btn-primary mb-4" onClick={() => this._closeModal()}>Close</button>
+                    </div>
+                </Modal>
+
                 <span className="alphabet-label mr-3">Input alphabet</span>
                 {
                     _renderMultipleInput(this, 'alphabet', this._handleAlphabetChange, {placeholder: 'Add letter'})
@@ -102,7 +93,11 @@ class UiContainer extends React.Component {
                 }
 
                 <hr/>
-                <span className="transition-map-label mr-3">Input transition map</span>
+                <span className="transition-map-label d-inline-block mr-3 mb-3">Input transition map</span>
+
+                <button type="button" className="btn btn-primary" onClick={this._openModal}>
+                    View more information on transition map structure
+                </button>
 
                 <Editor
                     value={this.state.transitionMap}
@@ -113,12 +108,13 @@ class UiContainer extends React.Component {
                 />
 
                 <button
+                    className="btn btn-success mt-3"
                     onClick={this._onVisualize}>
                     Visualize!
                 </button>
 
                 {this.state.graphInput &&
-                <Graph graph={converter(this.state.graphInput)} options={options} events={events}/>}
+                <Graph graph={converter(this.state.graphInput)} options={visOptions} events={events}/>}
                 {this.state.graphInput && console.log(converter(this.state.graphInput))}
             </div>
         );
@@ -162,6 +158,14 @@ class UiContainer extends React.Component {
                 graphInput: generatedOut
             }
         );
+    }
+
+    _closeModal() {
+        this.setState({isModalOpen: false});
+    }
+
+    _openModal() {
+        this.setState({isModalOpen: true});
     }
 }
 
