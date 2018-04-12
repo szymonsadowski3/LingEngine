@@ -71,6 +71,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.0.0",
     "brace": "latest",
+    "jquery": "^3.3.1",
     "jsoneditor": "^5.14.1",
     "jsoneditor-react": "^0.1.9",
     "lodash": "^4.17.5",
@@ -84,9 +85,11 @@
     "react-json-editor-ajrm": "^1.0.4",
     "react-modal": "^3.3.2",
     "react-spinkit": "^3.0.0",
+    "react-tabs": "^2.2.1",
     "react-tagsinput": "^3.19.0",
     "react-treeview": "^0.4.7",
-    "recompose": "latest"
+    "recompose": "latest",
+    "regex-colorizer": "^0.3.1"
   },
   "postcss": {}
 }

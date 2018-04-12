@@ -1,0 +1,1 @@
+export const dfaToRegexApi = 'http://localhost:5000/dfa/to/regex';
