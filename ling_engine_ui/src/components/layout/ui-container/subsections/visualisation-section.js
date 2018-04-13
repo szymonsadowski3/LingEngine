@@ -117,7 +117,6 @@ class VisualisationSection extends React.Component {
                 <div className="graph-wrapper">
                     <Graph graph={converter(this.state.graphInput)} options={visOptions} events={events}/>
                 </div>}
-                {this.state.graphInput && console.log(converter(this.state.graphInput))}
             </div>
         );
     }
