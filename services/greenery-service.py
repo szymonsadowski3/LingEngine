@@ -1,3 +1,5 @@
+from automata.fa.dfa import DFA
+from automata.fa.nfa import NFA
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from greenery import fsm, lego
@@ -66,6 +68,33 @@ def regex_to_dfa():
     }
 
     return jsonify(response)
+
+
+@app.route('/nfa/to/dfa', methods=['POST'])
+def nfa_to_dfa():
+    json = request.get_json()
+    states = json['states']
+    alphabet = json['alphabet']
+    initial = json['initial']
+    mapping = json['mapping']
+    finals = json['finals']
+    nfa = NFA(
+        states=set(states),
+        input_symbols=set(alphabet),
+        initial_state=initial,
+        transitions=mapping,
+        final_states=set(finals)
+    )
+    dfa = DFA(nfa)
+    return jsonify(
+        {
+            "alphabet": list(dfa.input_symbols),
+            "states": list(dfa.states),
+            "initial": dfa.initial_state,
+            "finals": list(dfa.final_states),
+            "mapping": dfa.transitions
+        }
+    )
 
 
 if __name__ == '__main__':
