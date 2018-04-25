@@ -76,7 +76,7 @@ def nfa_to_dfa():
     states = json['states']
     alphabet = json['alphabet']
     initial = json['initial']
-    mapping = json['mapping']
+    mapping = json['transitionMap']
     finals = json['finals']
     nfa = NFA(
         states=set(states),
@@ -92,7 +92,7 @@ def nfa_to_dfa():
             "states": list(dfa.states),
             "initial": dfa.initial_state,
             "finals": list(dfa.final_states),
-            "mapping": dfa.transitions
+            "transitionMap": dfa.transitions
         }
     )
 
