@@ -21,7 +21,7 @@ class UiContainer extends React.Component {
                 <TabList>
                     <Tab>Visualize Automata</Tab>
                     <Tab>Convert DFA to Regex</Tab>
-                    <Tab>Convert Regex to DFA</Tab>
+                    <Tab>Convert Regex to NFA</Tab>
                     <Tab>Convert NFA to DFA</Tab>
                 </TabList>
 
