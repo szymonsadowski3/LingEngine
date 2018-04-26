@@ -6,10 +6,8 @@ import find from 'lodash/find';
 
 export function converter(dfa) {
     const outputNodes = map(dfa.states, (state, index) => {
-        return {id: index, label: "" + state}
+        return {id: state, label: "" + state}
     });
-
-    console.log(outputNodes);
 
     let outputEdges = [];
 

@@ -48,7 +48,7 @@ def dfa_to_regex():
     })
 
 
-@app.route('/regex/to/dfa', methods=['POST'])
+@app.route('/regex/to/nfa', methods=['POST'])
 def regex_to_dfa():
     received_json = request.get_json(silent=True)
 

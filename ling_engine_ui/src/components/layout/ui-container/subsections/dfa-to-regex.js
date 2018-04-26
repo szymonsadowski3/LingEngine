@@ -17,6 +17,7 @@ import {dfaToRegexApi} from "../../../../config/api-endpoints";
 import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 
 import './dfa-to-regex.scss';
+import {exampleStandardTransitionMap, standardTransitionMapFormat} from "../../../../constants/constants-values";
 
 class DfaToRegex extends React.Component {
     constructor() {
@@ -66,7 +67,10 @@ class DfaToRegex extends React.Component {
         return <div className="rfa-to-regex-container container">
             <Modal visible={this.state.isModalOpen} width="600" effect="fadeInUp" onClickAway={() => this._closeModal()}>
                 <div className="container">
-                    <TransitionMapInfoInModal />
+                    <TransitionMapInfoInModal
+                        format={standardTransitionMapFormat}
+                        example={exampleStandardTransitionMap}
+                    />
                     <button className="btn btn-primary mb-4" onClick={() => this._closeModal()}>Close</button>
                 </div>
             </Modal>

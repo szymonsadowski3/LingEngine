@@ -1,11 +1,15 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
 import clone from 'lodash/clone';
+import get from 'lodash/get';
 
 import axios from 'axios';
 
 import {converter} from '../../../../utils/transform-from-dfa-to-graph';
-import {visOptions} from "../../../../constants/constants-values";
+import {
+    exampleStandardTransitionMap, nfaTransitionMapExample, nfaTransitionMapFormat, standardTransitionMapFormat,
+    visOptions
+} from "../../../../constants/constants-values";
 
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
@@ -41,11 +45,11 @@ class NfaToDfa extends React.Component {
             graphInput: null,
             isModalOpen: false,
 
-            alphabet2: null,
-            states2: null,
-            initial2: null,
-            finals2: null,
-            transitionMap2: null
+            resultingAlphabet: null,
+            resultingStates: null,
+            resultingInitial: null,
+            resultingFinals: null,
+            resultingTransitionMap: null
         };
 
         this._handleAlphabetChange = this._handleAlphabetChange.bind(this);
@@ -79,7 +83,10 @@ class NfaToDfa extends React.Component {
                 <Modal visible={this.state.isModalOpen} width="600" effect="fadeInUp"
                        onClickAway={() => this._closeModal()}>
                     <div className="container">
-                        <TransitionMapInfoInModal/>
+                        <TransitionMapInfoInModal
+                            format={nfaTransitionMapFormat}
+                            example={nfaTransitionMapExample}
+                        />
                         <button className="btn btn-primary mb-4" onClick={() => this._closeModal()}>Close</button>
                     </div>
                 </Modal>
@@ -132,21 +139,22 @@ class NfaToDfa extends React.Component {
 
                 {this.state.alphabet && <dl className="row">
                     <dt className="col-sm-3">Alphabet</dt>
-                    <dd className="col-sm-9">{JSON.stringify(this.state.alphabet2)}</dd>
+                    <dd className="col-sm-9">{this.state.resultingAlphabet && JSON.stringify(this.state.resultingAlphabet)}</dd>
 
                     <dt className="col-sm-3">States</dt>
-                    <dd className="col-sm-9">{JSON.stringify(this.state.states2)}</dd>
+                    <dd className="col-sm-9">{this.state.resultingStates && JSON.stringify(this.state.resultingStates)}</dd>
 
                     <dt className="col-sm-3">Initial state</dt>
-                    <dd className="col-sm-9">{JSON.stringify(this.state.initial2)}</dd>
+                    <dd className="col-sm-9">{this.state.resultingInitial && JSON.stringify(this.state.resultingInitial)}</dd>
 
 
                     <dt className="col-sm-3">Final states</dt>
-                    <dd className="col-sm-9">{JSON.stringify(this.state.finals2)}</dd>
+                    <dd className="col-sm-9">{this.state.resultingFinals && JSON.stringify(this.state.resultingFinals)}</dd>
 
                     <dt className="col-sm-3">Transition map</dt>
                     <dd className="col-sm-9">
-                        <JSONPretty id="json-pretty" json={this.state.transitionMap2}/>
+                        {this.state.resultingTransitionMap &&
+                        <JSONPretty id="json-pretty" json={this.state.resultingTransitionMap}/>}
                     </dd>
                 </dl>}
 
@@ -160,23 +168,23 @@ class NfaToDfa extends React.Component {
         );
     }
 
-    _generateGraphInput2(state) {
+    _generateRequestBody(input) {
         return {
-            alphabet: clone(state.alphabet2),
-            states: clone(state.states2),
-            initial: clone(state.initial2)[0],
-            finals: clone(state.finals2),
-            transitionMap: clone(state.transitionMap2),
+            alphabet: clone(input.alphabet),
+            states: clone(input.states),
+            initial: clone(input.initial)[0],
+            finals: clone(input.finals),
+            transitionMap: clone(input.transitionMap),
         }
     }
 
-    _generateGraphInput(state) {
+    _generateGraphInput(input) {
         return {
-            alphabet: clone(state.alphabet),
-            states: clone(state.states),
-            initial: clone(state.initial)[0],
-            finals: clone(state.finals),
-            transitionMap: clone(state.transitionMap),
+            alphabet: clone(input.resultingAlphabet),
+            states: clone(input.resultingStates),
+            initial: clone(input.resultingInitial),
+            finals: clone(input.resultingFinals),
+            transitionMap: clone(input.resultingTransitionMap),
         }
     }
 
@@ -201,52 +209,27 @@ class NfaToDfa extends React.Component {
     }
 
     _convertToDfa() {
-        const request = this._generateGraphInput(this.state);
-
+        const request = this._generateRequestBody(this.state);
         const component = this;
 
         axios.post(nfaToDfaApi, request).then(function (response) {
+            const stateToSet = {
+                resultingTransitionMap: response.data.transitionMap,
+                resultingStates: response.data.states,
+                resultingInitial: response.data.initial,
+                resultingFinals: response.data.finals,
+                resultingAlphabet: response.data.alphabet,
+            };
+
             component.setState({
-                transitionMap2: response.data.transitionMap,
-                states2: response.data.states,
-                initial2: response.data.initial,
-                finals2: response.data.finals,
-                alphabet2: response.data.alphabet
+                ...stateToSet,
+                graphInput: component._generateGraphInput(stateToSet)
             });
         })
             .catch(function (error) {
-                alert('Error while fetchin data!');
+                alert('Error while fetchin data!' + error);
             });
-
-        this.setState(
-            {
-                graphInput: this._generateGraphInput2(this.state)
-            }
-        );
     }
-
-    // _convertToRegex() {
-    //     const { alphabet, states, initial, finals, transitionMap } = this.state;
-    //
-    //     const request = {
-    //         alphabet: alphabet,
-    //         states: map(states, String),
-    //         initial: initial[0].toString(),
-    //         finals: map(finals, String),
-    //         map: transitionMap,
-    //     };
-    //
-    //     const component = this;
-    //
-    //     axios.post(dfaToRegexApi, request).then(function (response) {
-    //         component.setState({
-    //             obtainedRegex: response.data.regex,
-    //         });
-    //     })
-    //         .catch(function (error) {
-    //             alert('Error while fetchin data!');
-    //         });
-    // }
 
     _closeModal() {
         this.setState({isModalOpen: false});

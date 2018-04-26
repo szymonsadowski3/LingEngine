@@ -3,7 +3,10 @@ import Graph from 'react-graph-vis';
 import clone from 'lodash/clone';
 
 import {converter} from '../../../../utils/transform-from-dfa-to-graph';
-import {visOptions} from "../../../../constants/constants-values";
+import {
+    exampleStandardTransitionMap, standardTransitionMapFormat,
+    visOptions
+} from "../../../../constants/constants-values";
 
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
@@ -64,7 +67,10 @@ class VisualisationSection extends React.Component {
             <div className="visualization-container container visualize-automata">
                 <Modal visible={this.state.isModalOpen} width="600" effect="fadeInUp" onClickAway={() => this._closeModal()}>
                     <div className="container">
-                        <TransitionMapInfoInModal />
+                        <TransitionMapInfoInModal
+                            format={standardTransitionMapFormat}
+                            example={exampleStandardTransitionMap}
+                        />
                         <button className="btn btn-primary mb-4" onClick={() => this._closeModal()}>Close</button>
                     </div>
                 </Modal>

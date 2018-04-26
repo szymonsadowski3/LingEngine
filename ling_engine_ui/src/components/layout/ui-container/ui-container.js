@@ -7,7 +7,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import '../../../../node_modules/react-tabs/style/react-tabs.scss'
 import VisualisationSection from "./subsections/visualisation-section";
 import DfaToRegex from "./subsections/dfa-to-regex";
-import RegexToDfa from "./subsections/regex-to-dfa";
+import RegexToDfa from "./subsections/regex-to-nfa";
 import NfaToDfa from "./subsections/nfa-to-dfa";
 
 class UiContainer extends React.Component {
