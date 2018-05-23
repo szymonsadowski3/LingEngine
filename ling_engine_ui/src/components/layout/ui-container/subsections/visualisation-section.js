@@ -7,12 +7,14 @@ import {
     exampleStandardTransitionMap, standardTransitionMapFormat,
     visOptions
 } from "../../../../constants/constants-values";
+import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
 import { JsonEditor as Editor } from 'jsoneditor-react';
 
 import Modal from 'react-awesome-modal';
+import ReactLoading from 'react-loading';
 
 import ace from 'brace';
 import 'brace/mode/json';
@@ -21,7 +23,6 @@ import 'brace/theme/github';
 import 'jsoneditor-react/es/editor.min.css';
 import 'react-tagsinput/react-tagsinput.css'
 import './visualization-section.scss';
-import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 
 class VisualisationSection extends React.Component {
     constructor() {
@@ -35,6 +36,7 @@ class VisualisationSection extends React.Component {
             transitionMap: {},
             graphInput: null,
             isModalOpen: false,
+            loading: false,
         };
 
         this._handleAlphabetChange = this._handleAlphabetChange.bind(this);
@@ -114,10 +116,17 @@ class VisualisationSection extends React.Component {
                 />
 
                 <button
-                    className="btn btn-success mt-3"
+                    className="btn btn-primary mt-3"
                     onClick={this._onVisualize}>
                     Visualize!
                 </button>
+
+                {
+                    this.state.loading &&
+                    <div className="spin-wrapper mt-4">
+                        <ReactLoading height={30} width={30} color={"#000000"} type={"spin"}/>
+                    </div>
+                }
 
                 {this.state.graphInput &&
                 <div className="graph-wrapper">
@@ -158,11 +167,16 @@ class VisualisationSection extends React.Component {
     }
 
     _onVisualize() {
+        this.setState({
+            loading: true,
+        });
+
         const generatedOut = this._generateGraphInput(this.state);
 
         this.setState(
             {
-                graphInput: generatedOut
+                graphInput: generatedOut,
+                loading: false,
             }
         );
     }

@@ -2,6 +2,8 @@ import React from 'react';
 import Graph from 'react-graph-vis';
 import clone from 'lodash/clone';
 import get from 'lodash/get';
+import every from 'lodash/every';
+import isEqual from 'lodash/isEqual';
 
 import axios from 'axios';
 
@@ -10,6 +12,7 @@ import {
     exampleStandardTransitionMap, nfaTransitionMapExample, nfaTransitionMapFormat, standardTransitionMapFormat,
     visOptions
 } from "../../../../constants/constants-values";
+import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
@@ -30,7 +33,7 @@ import '../../../../../node_modules/react-json-pretty/src/JSONPretty.monikai.css
 import 'jsoneditor-react/es/editor.min.css';
 import 'react-tagsinput/react-tagsinput.css'
 import './visualization-section.scss';
-import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
+import ReactLoading from 'react-loading';
 
 class NfaToDfa extends React.Component {
     constructor() {
@@ -49,7 +52,9 @@ class NfaToDfa extends React.Component {
             resultingStates: null,
             resultingInitial: null,
             resultingFinals: null,
-            resultingTransitionMap: null
+            resultingTransitionMap: null,
+
+            loading: false,
         };
 
         this._handleAlphabetChange = this._handleAlphabetChange.bind(this);
@@ -60,6 +65,17 @@ class NfaToDfa extends React.Component {
         this._convertToDfa = this._convertToDfa.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this._openModal = this._openModal.bind(this);
+
+        this.isResultPresent = this.isResultPresent.bind(this);
+    }
+
+    isResultPresent() {
+        const resultFields = [this.state.resultingAlphabet, this.state.resultingStates, this.state.resultingInitial,
+            this.state.resultingFinals, this.state.resultingTransitionMap];
+
+        return every(resultFields, field => {
+            return !isEqual(field, null);
+        });
     }
 
     render() {
@@ -91,28 +107,31 @@ class NfaToDfa extends React.Component {
                     </div>
                 </Modal>
 
-                <span className="alphabet-label mr-3">Input alphabet</span>
-                {
-                    _renderMultipleInput(this, 'alphabet', this._handleAlphabetChange, {placeholder: 'Add letter'})
-                }
 
-                <hr/>
-                <span className="states-label mr-3">Input states</span>
-                {
-                    _renderMultipleInput(this, 'states', this._handleStatesChange, {placeholder: 'Add state'})
-                }
+                <div className="output-dfa-wrapper">
+                    <span className="alphabet-label mr-3">Input alphabet</span>
+                    {
+                        _renderMultipleInput(this, 'alphabet', this._handleAlphabetChange, {placeholder: 'Add letter'})
+                    }
 
-                <hr/>
-                <span className="initial-label mr-3">Input initial state</span>
-                {
-                    _renderMultipleInput(this, 'initial', this._handleInitialChange, {placeholder: 'Add initial'})
-                }
+                    <hr/>
+                    <span className="states-label mr-3">Input states</span>
+                    {
+                        _renderMultipleInput(this, 'states', this._handleStatesChange, {placeholder: 'Add state'})
+                    }
 
-                <hr/>
-                <span className="finals-label mr-3">Input final states</span>
-                {
-                    _renderMultipleInput(this, 'finals', this._handleFinalsChange, {placeholder: 'Add final'})
-                }
+                    <hr/>
+                    <span className="initial-label mr-3">Input initial state</span>
+                    {
+                        _renderMultipleInput(this, 'initial', this._handleInitialChange, {placeholder: 'Add initial'})
+                    }
+
+                    <hr/>
+                    <span className="finals-label mr-3">Input final states</span>
+                    {
+                        _renderMultipleInput(this, 'finals', this._handleFinalsChange, {placeholder: 'Add final'})
+                    }
+                </div>
 
                 <hr/>
                 <span className="transition-map-label d-inline-block mr-3 mb-3">Input transition map</span>
@@ -130,14 +149,21 @@ class NfaToDfa extends React.Component {
                 />
 
                 <button
-                    className="btn btn-success mt-3"
+                    className="btn btn-primary mt-3"
                     onClick={this._convertToDfa}>
                     Convert to DFA!
                 </button>
 
+                {
+                    this.state.loading &&
+                    <div className="spin-wrapper mt-4">
+                        <ReactLoading height={30} width={30} color={"#000000"} type={"spin"}/>
+                    </div>
+                }
+
                 <hr />
 
-                {this.state.alphabet && <dl className="row">
+                {this.isResultPresent() && <dl className="row">
                     <dt className="col-sm-3">Alphabet</dt>
                     <dd className="col-sm-9">{this.state.resultingAlphabet && JSON.stringify(this.state.resultingAlphabet)}</dd>
 
@@ -209,6 +235,10 @@ class NfaToDfa extends React.Component {
     }
 
     _convertToDfa() {
+        this.setState({
+            loading: true,
+        });
+
         const request = this._generateRequestBody(this.state);
         const component = this;
 
@@ -223,7 +253,8 @@ class NfaToDfa extends React.Component {
 
             component.setState({
                 ...stateToSet,
-                graphInput: component._generateGraphInput(stateToSet)
+                graphInput: component._generateGraphInput(stateToSet),
+                loading: false,
             });
         })
             .catch(function (error) {

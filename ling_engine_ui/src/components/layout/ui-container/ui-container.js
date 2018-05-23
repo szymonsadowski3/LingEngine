@@ -17,7 +17,7 @@ class UiContainer extends React.Component {
 
     render() {
         return (
-            <Tabs>
+            <Tabs className="container">
                 <TabList>
                     <Tab>Visualize Automata</Tab>
                     <Tab>Convert DFA to Regex</Tab>

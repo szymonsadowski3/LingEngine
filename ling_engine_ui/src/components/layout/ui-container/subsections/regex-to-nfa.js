@@ -1,16 +1,18 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
 
-import '../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import axios from "axios/index";
 import {regexToNfaApi} from "../../../../config/api-endpoints";
 import JSONPretty from 'react-json-pretty';
 
-import '../../../../../node_modules/react-json-pretty/src/JSONPretty.monikai.css';
-import './regex-to-nfa.scss';
 import {converter} from "../../../../utils/transform-from-dfa-to-graph";
 import {visOptions} from "../../../../constants/constants-values";
 import clone from "lodash/clone";
+import axios from "axios/index";
+import ReactLoading from 'react-loading';
+
+import '../../../../../node_modules/react-json-pretty/src/JSONPretty.monikai.css';
+import './regex-to-nfa.scss';
+import '../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 class RegexToNfa extends React.Component {
     constructor() {
@@ -18,11 +20,11 @@ class RegexToNfa extends React.Component {
 
         this.state = {
             regexInput: '',
+            loading: false
         };
 
         this._handleRegexInput = this._handleRegexInput.bind(this);
-        this._convertToNfa = this._convertToNfa.bind(this);
-        this._onVisualize = this._onVisualize.bind(this);
+        this._convertToNfaAndVisualize = this._convertToNfaAndVisualize.bind(this);
     }
 
     render() {
@@ -43,9 +45,17 @@ class RegexToNfa extends React.Component {
                 />
             </div>
 
-            <button type="button" className="btn btn-primary" onClick={this._convertToNfa}>
-                Convert to NFA
+            <button type="button" className="btn btn-primary"
+                    onClick={this._convertToNfaAndVisualize} disabled={this.state.loading}>
+                Convert to NFA & Visualize
             </button>
+
+            {
+                this.state.loading &&
+                    <div className="spin-wrapper mt-4">
+                        <ReactLoading height={30} width={30} color={"#000000"} type={"spin"}/>
+                    </div>
+            }
 
             <hr />
 
@@ -71,12 +81,6 @@ class RegexToNfa extends React.Component {
 
             <hr />
 
-            <button
-                className="btn btn-success mt-3"
-                onClick={this._onVisualize}>
-                Visualize!
-            </button>
-
             {this.state.graphInput &&
             <div className="graph-wrapper mb-5">
                 <Graph graph={converter(this.state.graphInput)} options={visOptions} events={events}/>
@@ -88,7 +92,11 @@ class RegexToNfa extends React.Component {
         this.setState({regexInput: event.target.value});
     }
 
-    _convertToNfa() {
+    _convertToNfaAndVisualize() {
+        this.setState({
+            loading: true,
+        });
+
         const request = {
             regex: this.state.regexInput
         };
@@ -102,20 +110,19 @@ class RegexToNfa extends React.Component {
                 initial: response.data.initial,
                 states: response.data.states,
                 transitionMap: response.data.map,
+            }, () => {
+                const generatedOut = component._generateGraphInput(this.state);
+
+                component.setState(
+                    {
+                        graphInput: generatedOut,
+                        loading: false
+                    }
+                );
             });
         }).catch(function (error) {
             alert('Error while fetchin data!');
         });
-    }
-
-    _onVisualize() {
-        const generatedOut = this._generateGraphInput(this.state);
-
-        this.setState(
-            {
-                graphInput: generatedOut
-            }
-        );
     }
 
     _generateGraphInput(state) {

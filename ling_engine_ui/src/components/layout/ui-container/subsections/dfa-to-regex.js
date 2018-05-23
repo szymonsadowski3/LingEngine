@@ -9,6 +9,7 @@ import 'brace/mode/json';
 import 'brace/theme/github';
 
 import TagsInput from "react-tagsinput";
+import ReactLoading from 'react-loading';
 
 import Modal from 'react-awesome-modal';
 
@@ -37,6 +38,8 @@ class DfaToRegex extends React.Component {
             graphInput: null,
             isModalOpen: false,
             obtainedRegex: null,
+
+            loading: false,
         };
 
         this._handleAlphabetChange = this._handleAlphabetChange.bind(this);
@@ -117,6 +120,13 @@ class DfaToRegex extends React.Component {
                 Convert to regex
             </button>
 
+            {
+                this.state.loading &&
+                <div className="spin-wrapper mt-4">
+                    <ReactLoading height={30} width={30} color={"#000000"} type={"spin"}/>
+                </div>
+            }
+
             <div className="regex regex-view mt-3">
                 {this.state.obtainedRegex}
             </div>
@@ -156,6 +166,10 @@ class DfaToRegex extends React.Component {
     }
 
     _convertToRegex() {
+        this.setState({
+            loading: true,
+        });
+
         const { alphabet, states, initial, finals, transitionMap } = this.state;
 
         const request = {
@@ -171,6 +185,7 @@ class DfaToRegex extends React.Component {
         axios.post(dfaToRegexApi, request).then(function (response) {
             component.setState({
                 obtainedRegex: response.data.regex,
+                loading: false,
             });
         })
         .catch(function (error) {
