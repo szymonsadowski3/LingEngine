@@ -12,8 +12,8 @@ import {
     exampleStandardTransitionMap, nfaTransitionMapExample, nfaTransitionMapFormat, standardTransitionMapFormat,
     visOptions
 } from "../../../../constants/constants-values";
-import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 
+import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 import 'vis/dist/vis.css';
 import TagsInput from 'react-tagsinput'
 import {JsonEditor as Editor} from 'jsoneditor-react';

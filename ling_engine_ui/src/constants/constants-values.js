@@ -51,6 +51,19 @@ export const exampleStandardTransitionMap =                            `
 }
                             `;
 
+export const minimizeExampleMapFormat = `
+{
+  "0": {
+    "a": "0",
+    "b": "0"
+  },
+  "1": {
+    "a": "0",
+    "b": "0"
+  }
+}
+`;
+
 export const standardTransitionMapFormat =                         `
 {
     "[input_state_0]": {

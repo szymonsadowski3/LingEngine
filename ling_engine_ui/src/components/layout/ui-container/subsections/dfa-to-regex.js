@@ -1,5 +1,4 @@
 import React from 'react';
-
 import axios from 'axios';
 
 import map from 'lodash/map';
@@ -17,8 +16,8 @@ import { JsonEditor as Editor } from 'jsoneditor-react';
 import {dfaToRegexApi} from "../../../../config/api-endpoints";
 import TransitionMapInfoInModal from "../../stateless-helpers/transition-map-info-in-modal";
 
-import './dfa-to-regex.scss';
 import {exampleStandardTransitionMap, standardTransitionMapFormat} from "../../../../constants/constants-values";
+import './dfa-to-regex.scss';
 
 class DfaToRegex extends React.Component {
     constructor() {

@@ -4,6 +4,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from greenery import fsm, lego
 
+from services.minimizer.run import minimize_dfa, parse_minimization_transitions_to_ui_json
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -24,7 +26,7 @@ def add_cors_headers(response):
 @app.route('/hello', methods=['GET'])
 def hello():
     return jsonify({
-        "message" : "ok"
+        "message": "ok"
     })
 
 
@@ -93,6 +95,27 @@ def nfa_to_dfa():
             "initial": dfa.initial_state,
             "finals": list(dfa.final_states),
             "transitionMap": dfa.transitions
+        }
+    )
+
+
+@app.route('/dfa/minimize', methods=['POST'])
+def dfa_minimize():
+    json = request.get_json()
+    states = json['states']
+    alphabet = json['alphabet']
+    initial = json['initial']
+    mapping = json['transitionMap']
+    finals = json['finals']
+
+    minimized_dfa = minimize_dfa(states, finals, initial, alphabet, mapping)
+    return jsonify(
+        {
+            "alphabet": minimized_dfa.terminals,
+            "states": minimized_dfa.states,
+            "initial": minimized_dfa.start_state,
+            "finals": minimized_dfa.final_states,
+            "transitionMap": parse_minimization_transitions_to_ui_json(minimized_dfa.transitions)
         }
     )
 
