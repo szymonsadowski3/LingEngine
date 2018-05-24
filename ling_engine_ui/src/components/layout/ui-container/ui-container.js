@@ -9,6 +9,7 @@ import VisualisationSection from "./subsections/visualisation-section";
 import DfaToRegex from "./subsections/dfa-to-regex";
 import RegexToDfa from "./subsections/regex-to-nfa";
 import NfaToDfa from "./subsections/nfa-to-dfa";
+import MinimizeDfa from "./subsections/minimize-dfa";
 
 class UiContainer extends React.Component {
     constructor() {
@@ -36,6 +37,9 @@ class UiContainer extends React.Component {
                 </TabPanel>
                 <TabPanel>
                     <NfaToDfa />
+                </TabPanel>
+                <TabPanel>
+                    <MinimizeDfa />
                 </TabPanel>
             </Tabs>
         );
