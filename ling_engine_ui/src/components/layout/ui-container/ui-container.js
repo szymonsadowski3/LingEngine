@@ -24,6 +24,7 @@ class UiContainer extends React.Component {
                     <Tab>Convert DFA to Regex</Tab>
                     <Tab>Convert Regex to NFA</Tab>
                     <Tab>Convert NFA to DFA</Tab>
+                    <Tab>Minimize DFA</Tab>
                 </TabList>
 
                 <TabPanel>
