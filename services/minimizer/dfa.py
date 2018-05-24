@@ -2,7 +2,7 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 
-from services.minimizer.disjoint_set import DisjointSet
+from minimizer.disjoint_set import DisjointSet
 
 
 class DFA(object):
