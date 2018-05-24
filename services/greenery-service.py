@@ -4,7 +4,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from greenery import fsm, lego
 
-from services.minimizer.run import minimize_dfa, parse_minimization_transitions_to_ui_json
+# from services.minimizer.run import minimize_dfa, parse_minimization_transitions_to_ui_json
+from minimizer.run import parse_minimization_transitions_to_ui_json, minimize_dfa
 
 app = Flask(__name__)
 cors = CORS(app)

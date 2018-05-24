@@ -14,7 +14,7 @@
 # ->
 
 # (state, signal): state
-from services.minimizer.dfa import DFA
+from minimizer.dfa import DFA
 
 
 def parse_ui_json_to_minimization_transitions(input_json):
