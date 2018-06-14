@@ -1,16 +1,18 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
-import get from 'lodash/get';
+import map from 'lodash/map';
 import clone from 'lodash/clone';
 import every from 'lodash/every';
+import split from 'lodash/split';
 import isEqual from 'lodash/isEqual';
+import ReactDOM from 'react-dom';
 
 import axios from 'axios';
 
 import {converter} from '../../../../utils/transform-from-dfa-to-graph';
 import {
-    exampleStandardTransitionMap, nfaGrammarTransitionMapExample, nfaTransitionMapExample, nfaTransitionMapFormat,
-    standardTransitionMapFormat,
+    nfaGrammarTransitionMapExample,
+    nfaTransitionMapFormat,
     visOptions
 } from "../../../../constants/constants-values";
 
@@ -33,7 +35,7 @@ import '../../../../../node_modules/react-json-pretty/src/JSONPretty.monikai.css
 
 import 'jsoneditor-react/es/editor.min.css';
 import 'react-tagsinput/react-tagsinput.css'
-import './visualization-section.scss';
+import './nfa-to-regular-grammar.scss';
 import ReactLoading from 'react-loading';
 
 class NfaToRegularGrammar extends React.Component {
@@ -42,9 +44,9 @@ class NfaToRegularGrammar extends React.Component {
 
         this.state = {
             alphabet: ["a", "b"],
-            states: ["q0", "q1", "q2"],
-            initial: ["q0"],
-            finals: ["q1"],
+            states: ["Q", "W", "E"],
+            initial: ["Q"],
+            finals: ["W"],
             transitionMap: {},
             graphInput: null,
             isModalOpen: false,
@@ -73,7 +75,7 @@ class NfaToRegularGrammar extends React.Component {
     }
 
     isResultPresent() {
-        const resultFields = [this.result];
+        const resultFields = [this.state.resultingGrammar];
 
         return every(resultFields, field => {
             return !isEqual(field, null);
@@ -166,15 +168,17 @@ class NfaToRegularGrammar extends React.Component {
                     </div>
                 }
 
-                <hr />
+                <hr/>
 
+                <h6>Resulting Regular Grammar</h6>
 
+                {/*{"q0":["a","aq1"],"q1":["a","aq1"],"q2":["bq0"]}*/}
 
-                {this.isResultPresent() && <p>
-                    {JSON.stringify(this.state.resultingGrammar)}
-                </p>}
+                {this.isResultPresent() && this.renderGrammar(this.state.resultingGrammar)}
 
-                <hr />
+                <hr/>
+
+                <h6>Visualized DFA equivalent below:</h6>
 
                 {this.state.graphInput &&
                 <div className="graph-wrapper">
@@ -182,6 +186,37 @@ class NfaToRegularGrammar extends React.Component {
                 </div>}
             </div>
         );
+    }
+
+    renderGrammar(resultingGrammar) {
+        // {
+        //   "q0": [
+        //     "a",
+        //     "aq1"
+        // ],
+        //   "q1": [
+        //     "a",
+        //     "aq1"
+        // ],
+        //   "q2": [
+        //     "bq0"
+        // ]
+        // }
+
+        console.log('renderin');
+        return map(Object.entries(resultingGrammar), (grammarItems, value) => {
+            const initial = grammarItems[0];
+            let rules = clone(grammarItems);
+            rules.shift();
+            rules = split(rules, ',');
+
+            return <div className={"grammar-section"}>{
+                map(rules, (rule) => {
+                    const display = `${initial} -> ${rule}`;
+                    return <p>{display}</p>;
+                })
+            }</div>;
+        });
     }
 
     _generateRequestBody(input) {
@@ -247,9 +282,9 @@ class NfaToRegularGrammar extends React.Component {
                 loading: false,
             });
         })
-        .catch(function (error) {
-            alert('Error while fetchin data!' + error);
-        });
+            .catch(function (error) {
+                alert('Error while fetchin data!' + error);
+            });
 
         axios.post(nfaToGrammarApi, request).then(function (response) {
             const stateToSet = {
@@ -261,9 +296,9 @@ class NfaToRegularGrammar extends React.Component {
                 loading: false,
             });
         })
-        .catch(function (error) {
-            alert('Error while fetchin data!' + error);
-        });
+            .catch(function (error) {
+                alert('Error while fetchin data!' + error);
+            });
     }
 
     _closeModal() {

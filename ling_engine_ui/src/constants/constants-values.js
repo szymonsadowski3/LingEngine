@@ -100,9 +100,9 @@ export const nfaTransitionMapFormat =                         `
 
 export const nfaTransitionMapExample = `
 {
-    "q0": {
+    "Q": {
         "a": [
-            "q1"
+            "W"
         ]
     },
     "q1": {
@@ -123,19 +123,19 @@ export const nfaTransitionMapExample = `
 
 export const nfaGrammarTransitionMapExample = `
 {
-    "q0": {
+    "Q": {
         "a": [
-            "q1"
+            "W"
         ]
     },
-    "q1": {
+    "W": {
         "a": [
-            "q1"
+            "W"
         ]
     },
-    "q2": {
+    "E": {
         "b": [
-            "q0"
+            "Q"
         ]
     }
 }
