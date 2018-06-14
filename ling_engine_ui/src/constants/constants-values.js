@@ -120,3 +120,23 @@ export const nfaTransitionMapExample = `
     }
 }
 `;
+
+export const nfaGrammarTransitionMapExample = `
+{
+    "q0": {
+        "a": [
+            "q1"
+        ]
+    },
+    "q1": {
+        "a": [
+            "q1"
+        ]
+    },
+    "q2": {
+        "b": [
+            "q0"
+        ]
+    }
+}
+`;

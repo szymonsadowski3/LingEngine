@@ -26,7 +26,7 @@ class UiContainer extends React.Component {
                     <Tab>Convert Regex to NFA</Tab>
                     <Tab>Convert NFA to DFA</Tab>
                     <Tab>Minimize DFA</Tab>
-                    <Tab>NFA to regular grammar</Tab>
+                    <Tab>NFA to Regular Grammar</Tab>
                 </TabList>
 
                 <TabPanel>

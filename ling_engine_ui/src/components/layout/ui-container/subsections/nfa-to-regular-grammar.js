@@ -1,7 +1,7 @@
 import React from 'react';
 import Graph from 'react-graph-vis';
-import clone from 'lodash/clone';
 import get from 'lodash/get';
+import clone from 'lodash/clone';
 import every from 'lodash/every';
 import isEqual from 'lodash/isEqual';
 
@@ -9,7 +9,8 @@ import axios from 'axios';
 
 import {converter} from '../../../../utils/transform-from-dfa-to-graph';
 import {
-    exampleStandardTransitionMap, nfaTransitionMapExample, nfaTransitionMapFormat, standardTransitionMapFormat,
+    exampleStandardTransitionMap, nfaGrammarTransitionMapExample, nfaTransitionMapExample, nfaTransitionMapFormat,
+    standardTransitionMapFormat,
     visOptions
 } from "../../../../constants/constants-values";
 
@@ -24,7 +25,7 @@ import ace from 'brace';
 import 'brace/mode/json';
 import 'brace/theme/github';
 
-import {nfaToDfaApi} from "../../../../config/api-endpoints";
+import {nfaToDfaApi, nfaToGrammarApi} from "../../../../config/api-endpoints";
 
 import JSONPretty from 'react-json-pretty';
 
@@ -35,7 +36,7 @@ import 'react-tagsinput/react-tagsinput.css'
 import './visualization-section.scss';
 import ReactLoading from 'react-loading';
 
-class NfaToDfa extends React.Component {
+class NfaToRegularGrammar extends React.Component {
     constructor() {
         super();
 
@@ -54,6 +55,8 @@ class NfaToDfa extends React.Component {
             resultingFinals: null,
             resultingTransitionMap: null,
 
+            resultingGrammar: null,
+
             loading: false,
         };
 
@@ -62,7 +65,7 @@ class NfaToDfa extends React.Component {
         this._handleInitialChange = this._handleInitialChange.bind(this);
         this._handleFinalsChange = this._handleFinalsChange.bind(this);
         this._handleTransitionMapChange = this._handleTransitionMapChange.bind(this);
-        this._convertToDfa = this._convertToDfa.bind(this);
+        this._convertToRegularGrammar = this._convertToRegularGrammar.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this._openModal = this._openModal.bind(this);
 
@@ -70,8 +73,7 @@ class NfaToDfa extends React.Component {
     }
 
     isResultPresent() {
-        const resultFields = [this.state.resultingAlphabet, this.state.resultingStates, this.state.resultingInitial,
-            this.state.resultingFinals, this.state.resultingTransitionMap];
+        const resultFields = [this.result];
 
         return every(resultFields, field => {
             return !isEqual(field, null);
@@ -79,6 +81,8 @@ class NfaToDfa extends React.Component {
     }
 
     render() {
+        this.state.graphInput && console.log(converter(this.state.graphInput));
+
         const events = {
             select: function (event) {
                 const {nodes, edges} = event;
@@ -94,16 +98,15 @@ class NfaToDfa extends React.Component {
             />;
         };
 
-        this.state.graphInput && console.log(converter(this.state.graphInput));
-
         return (
             <div className="nfa-to-dfa container container">
+                <h2>Nfa To Regular Grammar</h2>
                 <Modal visible={this.state.isModalOpen} width="600" effect="fadeInUp"
                        onClickAway={() => this._closeModal()}>
                     <div className="container">
                         <TransitionMapInfoInModal
                             format={nfaTransitionMapFormat}
-                            example={nfaTransitionMapExample}
+                            example={nfaGrammarTransitionMapExample}
                         />
                         <button className="btn btn-primary mb-4" onClick={() => this._closeModal()}>Close</button>
                     </div>
@@ -152,8 +155,8 @@ class NfaToDfa extends React.Component {
 
                 <button
                     className="btn btn-primary mt-3"
-                    onClick={this._convertToDfa}>
-                    Convert to DFA!
+                    onClick={this._convertToRegularGrammar}>
+                    Convert to Regular Grammar!
                 </button>
 
                 {
@@ -165,26 +168,11 @@ class NfaToDfa extends React.Component {
 
                 <hr />
 
-                {this.isResultPresent() && <dl className="row">
-                    <dt className="col-sm-3">Alphabet</dt>
-                    <dd className="col-sm-9">{this.state.resultingAlphabet && JSON.stringify(this.state.resultingAlphabet)}</dd>
-
-                    <dt className="col-sm-3">States</dt>
-                    <dd className="col-sm-9">{this.state.resultingStates && JSON.stringify(this.state.resultingStates)}</dd>
-
-                    <dt className="col-sm-3">Initial state</dt>
-                    <dd className="col-sm-9">{this.state.resultingInitial && JSON.stringify(this.state.resultingInitial)}</dd>
 
 
-                    <dt className="col-sm-3">Final states</dt>
-                    <dd className="col-sm-9">{this.state.resultingFinals && JSON.stringify(this.state.resultingFinals)}</dd>
-
-                    <dt className="col-sm-3">Transition map</dt>
-                    <dd className="col-sm-9">
-                        {this.state.resultingTransitionMap &&
-                        <JSONPretty id="json-pretty" json={this.state.resultingTransitionMap}/>}
-                    </dd>
-                </dl>}
+                {this.isResultPresent() && <p>
+                    {JSON.stringify(this.state.resultingGrammar)}
+                </p>}
 
                 <hr />
 
@@ -236,7 +224,7 @@ class NfaToDfa extends React.Component {
         this.setState({transitionMap: parsedMap})
     }
 
-    _convertToDfa() {
+    _convertToRegularGrammar() {
         this.setState({
             loading: true,
         });
@@ -262,6 +250,20 @@ class NfaToDfa extends React.Component {
         .catch(function (error) {
             alert('Error while fetchin data!' + error);
         });
+
+        axios.post(nfaToGrammarApi, request).then(function (response) {
+            const stateToSet = {
+                resultingGrammar: response.data.result,
+            };
+
+            component.setState({
+                ...stateToSet,
+                loading: false,
+            });
+        })
+        .catch(function (error) {
+            alert('Error while fetchin data!' + error);
+        });
     }
 
     _closeModal() {
@@ -273,4 +275,4 @@ class NfaToDfa extends React.Component {
     }
 }
 
-export default NfaToDfa;
+export default NfaToRegularGrammar;
