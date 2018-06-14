@@ -1,10 +1,14 @@
+import io
 from automata.fa.dfa import DFA
 from automata.fa.nfa import NFA
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from greenery import fsm, lego
+import nfa
 
 # from services.minimizer.run import minimize_dfa, parse_minimization_transitions_to_ui_json
+from converter import convert_common_to_array_transitions
+from grammar import RegularGrammar
 from minimizer.run import parse_minimization_transitions_to_ui_json, minimize_dfa
 
 app = Flask(__name__)
@@ -117,6 +121,37 @@ def dfa_minimize():
             "initial": minimized_dfa.start_state,
             "finals": minimized_dfa.final_states,
             "transitionMap": parse_minimization_transitions_to_ui_json(minimized_dfa.transitions)
+        }
+    )
+
+
+@app.route('/nfa/to/grammar', methods=['POST'])
+def nfa_to_grammar():
+    incoming_json = request.get_json()
+    states = incoming_json['states']
+    alphabet = incoming_json['alphabet']
+    initial = incoming_json['initial']
+    transitions = incoming_json['transitionMap']
+    finals = incoming_json['finals']
+
+    json_to_be_grammarized = {
+        "alphabet": alphabet,
+        "states": states,
+        "initial_state": initial,
+        "final_states": finals,
+        "transitions": convert_common_to_array_transitions(transitions)
+    }
+
+    grammar = RegularGrammar.from_nfa(nfa.NFA.load(json_to_be_grammarized))
+    productions = grammar.productions()
+
+    productions_with_lists_instead_of_sets = {
+        state: list(outputs) for state, outputs in productions.items()
+    }
+
+    return jsonify(
+        {
+            "result": productions_with_lists_instead_of_sets
         }
     )
 

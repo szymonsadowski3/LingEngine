@@ -10,6 +10,7 @@ import DfaToRegex from "./subsections/dfa-to-regex";
 import RegexToDfa from "./subsections/regex-to-nfa";
 import NfaToDfa from "./subsections/nfa-to-dfa";
 import MinimizeDfa from "./subsections/minimize-dfa";
+import NfaToRegularGrammar from "./subsections/nfa-to-regular-grammar";
 
 class UiContainer extends React.Component {
     constructor() {
@@ -25,6 +26,7 @@ class UiContainer extends React.Component {
                     <Tab>Convert Regex to NFA</Tab>
                     <Tab>Convert NFA to DFA</Tab>
                     <Tab>Minimize DFA</Tab>
+                    <Tab>NFA to regular grammar</Tab>
                 </TabList>
 
                 <TabPanel>
@@ -41,6 +43,9 @@ class UiContainer extends React.Component {
                 </TabPanel>
                 <TabPanel>
                     <MinimizeDfa />
+                </TabPanel>
+                <TabPanel>
+                    <NfaToRegularGrammar />
                 </TabPanel>
             </Tabs>
         );
