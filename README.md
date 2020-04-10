@@ -1,3 +1,7 @@
+# FormalLinguisticsEngine
+
+Build in flask & react.js
+
 # How to run this application:
 
 ```
