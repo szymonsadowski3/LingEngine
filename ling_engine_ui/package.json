@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "ajv": "latest",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.0.0",
     "brace": "latest",
     "jquery": "^3.3.1",
