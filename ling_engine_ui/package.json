@@ -73,7 +73,7 @@
     "bootstrap": "^4.0.0",
     "brace": "latest",
     "jquery": "^3.3.1",
-    "jsoneditor": "^5.14.1",
+    "jsoneditor": "^9.5.6",
     "jsoneditor-react": "^0.1.9",
     "lodash": "^4.17.5",
     "moment": "^2.21.0",
