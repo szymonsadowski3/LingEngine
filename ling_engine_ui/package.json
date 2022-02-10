@@ -51,7 +51,7 @@
     "image-webpack-loader": "^4.0.0",
     "jest": "^22.2.1",
     "jshint": "^2.9.5",
-    "node-sass": "^4.7.2",
+    "node-sass": "^7.0.0",
     "postcss-loader": "^2.1.0",
     "react": "^16.2.0",
     "react-addons-test-utils": "^15.6.2",
